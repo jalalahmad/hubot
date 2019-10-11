@@ -1,11 +1,24 @@
 ---
-layout: docs
-permalink: /docs/adapters/development/index.html
+permalink: /docs/adapters/development/
 ---
 
-# Adapter Basics
+# Development adapter
 
-All adapters inherit from the Adapter class in the `src/adapter.coffee` file.  There are certain methods that you will want to override.  Here is a basic stub of what an extended Adapter class would look like:
+## Adapter Basics
+
+All adapters inherit from the Adapter class in the `src/adapter.coffee` file.  If you're writing your adapter in CoffeeScript, require the primary version of the adapter:
+
+```coffee
+Adapter = require('hubot').Adapter
+```
+
+If you're writing your adapter in ES2015, you must require the ES2015 entrypoint instead:
+
+```js
+const Adapter = require('hubot/es2015').Adapter;
+```
+
+There are certain methods that you will want to override.  Here is a basic stub of what an extended Adapter class would look like:
 
 ```coffee
 class Sample extends Adapter
@@ -32,7 +45,7 @@ exports.use = (robot) ->
   new Sample robot
 ```
 
-# Setting Up Your Development Environment
+## Setting Up Your Development Environment
 
 1. Create a new folder for your adapter `hubot-sample`
   - `mkdir hubot-sample`
@@ -51,30 +64,32 @@ exports.use = (robot) ->
     "hubot": ">=2.0"
   },
   "devDependencies": {
-    "coffee-script": ">=1.2.0"
+    "coffeescript": ">=1.2.0"
   }
   ```
-  
+
 7. Generate your Hubot using the `yo hubot` [command](https://hubot.github.com/docs/)
 8. Change working directories to the `hubot` you created in step 7.
 9. Now perform an `npm link` to add your adapter to `hubot`
   - `npm link ../hubot-sample`
 10. Run `hubot -a sample`
 
-# Gotchas
+## Gotchas
 
 There is a an open issue in the node community around [npm linked peer dependencies not working](https://github.com/npm/npm/issues/5875).  To get this working for our project you will need to do some minor changes to your code.
 
 1. For the import in your `hubot-sample` adapter, add the following code
-```coffee
-try
-  {Robot,Adapter,TextMessage,User} = require 'hubot'
-catch
-  prequire = require('parent-require')
-  {Robot,Adapter,TextMessage,User} = prequire 'hubot'
+
+  ```coffee
+  try
+    {Robot,Adapter,TextMessage,User} = require 'hubot'
+  catch
+    prequire = require('parent-require')
+    {Robot,Adapter,TextMessage,User} = prequire 'hubot'
   ```
 2. In your `hubot-sample` folder, modify the `package.json` to include the following dependency so this custom import mechanism will work
-```json
+
+  ```json
   "dependencies": {
     "parent-require": "^1.0.0"
   }

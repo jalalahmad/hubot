@@ -1,11 +1,27 @@
 language: node_js
 node_js:
-  - "0.11"
-  - "0.10"
-matrix:
-  include:
-    - node_js: "0.8"
-      # old versions of NPM don't include support for `^` dependency prefixes in package.json
-      before_install: npm update -g npm
+  - "10"
+  - "8"
+  - "6"
 notifications:
   email: false
+sudo: false
+addons:
+  apt:
+    packages:
+    - expect
+before_install:
+  - npm install -g npm@latest
+before_script:
+  - npm prune
+  - bin/e2e-test.sh
+after_success:
+  - npm run coverage
+branches:
+  except:
+    - /^v\d+\.\d+\.\d+$/
+deploy:
+  provider: script
+  skip_cleanup: true
+  script:
+    - npx travis-deploy-once "npx semantic-release"
